@@ -3,4 +3,9 @@ version: '{build}'
 build_script:
   - ps: ./build.ps1 -Experimental
 
+environment:
+  CI_NUGET_FEED_URL: https://www.myget.org/F/mderrieyci/api/v2/package
+  CI_NUGET_FEED_APIKEY:
+    secure: DxPQENDr8gFoJidQkl+5DbGJAlMlfNeDpphwyj/BJJKxzGnmp4nQ5O7Na3cIqd5C
+
 test: off
