@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MickaelDerriey.UsefulExtensions", "MickaelDerriey.UsefulExtensions\MickaelDerriey.UsefulExtensions.xproj", "{2DD8EB3E-B890-4F4A-9495-04826A5EA59B}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MickaelDerriey.UsefulExtensions.Tests", "MickaelDerriey.UsefulExtensions.Tests\MickaelDerriey.UsefulExtensions.Tests.xproj", "{DC480681-55C6-45F0-8849-4036D1AC9FA8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2DD8EB3E-B890-4F4A-9495-04826A5EA59B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DD8EB3E-B890-4F4A-9495-04826A5EA59B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DD8EB3E-B890-4F4A-9495-04826A5EA59B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DD8EB3E-B890-4F4A-9495-04826A5EA59B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC480681-55C6-45F0-8849-4036D1AC9FA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC480681-55C6-45F0-8849-4036D1AC9FA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC480681-55C6-45F0-8849-4036D1AC9FA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC480681-55C6-45F0-8849-4036D1AC9FA8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
