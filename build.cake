@@ -5,10 +5,11 @@ var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 
 var isAppVeyor = AppVeyor.IsRunningOnAppVeyor;
+var artifactsDirectoryName = "build-artifacts";
 
 var sourceDirectory = Directory("./src").Path;
 var testResultsDirectory = Directory("./test-results").Path;
-var artifactsDirectory = Directory("./build-artifacts").Path;
+var artifactsDirectory = Directory($"./{artifactsDirectoryName}").Path;
 
 var projectName = "MickaelDerriey.UsefulExtensions";
 var testProjectName = "MickaelDerriey.UsefulExtensions.Tests";
@@ -22,7 +23,7 @@ Func<string, string> getProjectDirectoryPath = x =>
     return sourceDirectory.Combine(x).FullPath;
 };
 
-Setup(() =>
+Setup(context =>
 {
     CreateDirectory(testResultsDirectory);
     CreateDirectory(artifactsDirectory);
@@ -49,6 +50,18 @@ Setup(() =>
     Information("Calculated semantic version is {0}", version.SemVer);
     Information("Calculated NuGet base version is {0}", majorMinorPatch);
     Information("Calculated NuGet prerelease tag is {0}", versionSuffix ?? "empty");
+});
+
+Teardown(context =>
+{
+    if (isAppVeyor)
+    {
+        var artifacts = GetFiles($"./{artifactsDirectoryName}/*.*");
+        foreach (var artifact in artifacts)
+        {
+            AppVeyor.UploadArtifact(artifact);
+        }
+    }
 });
 
 Task("UpdateVersion")
