@@ -20,7 +20,14 @@ Setup(() =>
     CreateDirectory(artifactsDirectory);
 });
 
+Task("Restore")
+    .Does(() =>
+{
+    DotNetCoreRestore(sourceDirectory.FullPath);
+});
+
 Task("Build")
+    .IsDependentOn("Restore")
     .Does(() =>
 {
     foreach (var projectName in projectsNames)
