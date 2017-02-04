@@ -1,0 +1,7 @@
+branches:
+  master:
+    mode: ContinuousDeployment
+    increment: Minor
+    tag: beta
+ignore:
+  sha: []

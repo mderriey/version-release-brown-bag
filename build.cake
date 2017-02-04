@@ -1,5 +1,10 @@
+#addin "Cake.FileHelpers"
+#addin "Cake.Json"
+
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+
+var isAppVeyor = AppVeyor.IsRunningOnAppVeyor;
 
 var sourceDirectory = Directory("./src").Path;
 var testResultsDirectory = Directory("./test-results").Path;
@@ -8,6 +13,9 @@ var artifactsDirectory = Directory("./build-artifacts").Path;
 var projectName = "MickaelDerriey.UsefulExtensions";
 var testProjectName = "MickaelDerriey.UsefulExtensions.Tests";
 var projectsNames = new[] { projectName, testProjectName };
+
+var majorMinorPatch = string.Empty;
+string versionSuffix = null;
 
 Func<string, string> getProjectDirectoryPath = x =>
 {
@@ -18,9 +26,46 @@ Setup(() =>
 {
     CreateDirectory(testResultsDirectory);
     CreateDirectory(artifactsDirectory);
+
+    if (isAppVeyor)
+    {
+        GitVersion(new GitVersionSettings
+        {
+            OutputType = GitVersionOutput.BuildServer
+        });
+    }
+
+    var version = GitVersion(new GitVersionSettings
+    {
+        OutputType = GitVersionOutput.Json
+    });
+
+    majorMinorPatch = version.MajorMinorPatch;
+    if (version.LegacySemVerPadded.IndexOf($"{majorMinorPatch}-") > -1)
+    {
+        versionSuffix = version.LegacySemVerPadded.Substring(majorMinorPatch.Length + 1);
+    }
+
+    Information("Calculated semantic version is {0}", version.SemVer);
+    Information("Calculated NuGet base version is {0}", majorMinorPatch);
+    Information("Calculated NuGet prerelease tag is {0}", versionSuffix ?? "empty");
+});
+
+Task("UpdateVersion")
+    .Does(() =>
+{
+    var projectJsonFile = sourceDirectory
+        .Combine(projectName)
+        .CombineWithFilePath("project.json");
+
+    var json = ParseJsonFromFile(projectJsonFile);
+    json["version"] = string.Format("{0}-*", majorMinorPatch);
+
+    FileWriteText(projectJsonFile, json.ToString());
 });
 
 Task("Restore")
+    .IsDependentOn("UpdateVersion")
     .Does(() =>
 {
     DotNetCoreRestore(sourceDirectory.FullPath);
@@ -64,15 +109,12 @@ Task("CreatePackages")
     {
         Configuration = configuration,
         NoBuild = true,
-        OutputDirectory = artifactsDirectory
+        OutputDirectory = artifactsDirectory,
+        VersionSuffix = versionSuffix
     });
 });
 
 Task("Default")
-    .IsDependentOn("CreatePackages")
-    .Does(() =>
-{
-    Information("Hello from the Default task with configuration {0}", configuration);
-});
+    .IsDependentOn("CreatePackages");
 
 RunTarget(target);

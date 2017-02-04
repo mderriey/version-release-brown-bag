@@ -1,10 +1,11 @@
-﻿{
+{
   "title": "MickaelDerriey.UsefulExtensions",
-  "authors": [ "Mickaël Derriey" ],
+  "authors": [
+    "Mickaël Derriey"
+  ],
   "copyright": "Mickaël Derriey (c)",
   "description": "A colleciton of useful extension methods",
   "version": "0.1.0-*",
-
   "packOptions": {
     "summary": "A collection of useful extension methods",
     "repository": {
@@ -12,7 +13,6 @@
       "url": "https://github.com/mderriey/version-release-brown-bag"
     }
   },
-
   "frameworks": {
     "netstandard1.1": {
       "dependencies": {
