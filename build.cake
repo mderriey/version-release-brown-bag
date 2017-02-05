@@ -59,7 +59,8 @@ Setup(context =>
 
     var version = GitVersion(new GitVersionSettings
     {
-        OutputType = GitVersionOutput.Json
+        OutputType = GitVersionOutput.Json,
+        UpdateAssemblyInfo = true
     });
 
     majorMinorPatch = version.MajorMinorPatch;
