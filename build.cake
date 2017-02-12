@@ -177,7 +177,7 @@ Task("CreateRelease")
 {
     var prFile = "./temp/pr.json";
     DownloadFile(
-        $"https://api.github.com/repos/mderriey/verion-release-brown-bag/pulls/{AppVeyor.Environment.PullRequest.Number}",
+        $"https://api.github.com/repos/mderriey/version-release-brown-bag/pulls/{AppVeyor.Environment.PullRequest.Number}",
         prFile);
 
     var prData = ParseJsonFromFile(prFile);
