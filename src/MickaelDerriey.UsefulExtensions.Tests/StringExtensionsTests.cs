@@ -29,7 +29,7 @@ namespace MickaelDerriey.UsefulExtensions.Tests
             }
 
             [Fact]
-            public void FormatsTheSourceValueWithSpecifiedArguments()
+            public void FormatsTheSourceValueWithSpecifiedMultipleArguments()
             {
                 var source = "Hey my name is {0}, I'm {1}";
 
