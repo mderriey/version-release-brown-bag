@@ -7,7 +7,8 @@ environment:
   CI_NUGET_FEED_URL: https://www.myget.org/F/mderrieyci/api/v2/package
   CI_NUGET_FEED_APIKEY:
     secure: DxPQENDr8gFoJidQkl+5DbGJAlMlfNeDpphwyj/BJJKxzGnmp4nQ5O7Na3cIqd5C
-  GITHUB_USERNAME: mderriey
+  GITHUB_USERNAME:
+    secure: VsO9tFwie4rmj2TUM+B3jA==
   GITHUB_TOKEN:
     secure: PuuSFgTZD6tpYD/cOJWZaDPwXZAtrNZKuSJDGqrfOZNedVxK1i0G7pY453y7fUNu
 
