@@ -6,7 +6,7 @@ var configuration = Argument("configuration", "Release");
 
 var isAppVeyor = AppVeyor.IsRunningOnAppVeyor;
 var isPullRequest = isAppVeyor && AppVeyor.Environment.PullRequest.IsPullRequest;
-var isMaster = isAppVeyor && AppVeyor.Environment.Repository.Branch.Equals("master", StringComparison.OrdinalIgnoreCase);
+var isMasterBranch = isAppVeyor && AppVeyor.Environment.Repository.Branch.Equals("master", StringComparison.OrdinalIgnoreCase);
 var artifactsDirectoryName = "build-artifacts";
 
 var sourceDirectory = Directory("./src").Path;
@@ -25,21 +25,24 @@ Func<string, string> getProjectDirectoryPath = x =>
     return sourceDirectory.Combine(x).FullPath;
 };
 
+Func<string, string> getEnvironmentVariable = name =>
+{
+    var value = EnvironmentVariable(name);
+    if (string.IsNullOrEmpty(value))
+    {
+        throw new Exception($"Environment variable '{name}' is not set");
+    }
+
+    return value;
+};
+
 Func<string, Tuple<string, string>> getNugetFeedSettings = x =>
 {
     var urlVariableName = $"{x}_URL";
-    var url = EnvironmentVariable(urlVariableName);
-    if (string.IsNullOrEmpty(url))
-    {
-        throw new Exception($"Environment variable '{urlVariableName}' is not set");
-    }
+    var url = getEnvironmentVariable(urlVariableName);
 
     var apiKeyVariableName = $"{x}_APIKEY";
-    var apiKey = EnvironmentVariable(apiKeyVariableName);
-    if (string.IsNullOrEmpty(apiKey))
-    {
-        throw new Exception($"Environment variable '{apiKeyVariableName}' is not set");
-    }
+    var apiKey = getEnvironmentVariable(apiKeyVariableName);
 
     return Tuple.Create(url, apiKey);
 };
@@ -153,7 +156,7 @@ Task("PublishPackages")
     .IsDependentOn("CreatePackages")
     .WithCriteria(isAppVeyor)
     .WithCriteria(!isPullRequest)
-    .WithCriteria(isMaster)
+    .WithCriteria(isMasterBranch)
     .Does(() =>
 {
     var feedSettings = getNugetFeedSettings("CI_NUGET_FEED");
@@ -166,7 +169,41 @@ Task("PublishPackages")
     });
 });
 
+Task("CreateRelease")
+    .IsDependentOn("UnitTests")
+    .WithCriteria(isAppVeyor)
+    .WithCriteria(isPullRequest)
+    .Does(() =>
+{
+    var prFile = "./temp/pr.json";
+    DownloadFile(
+        $"https://api.github.com/repos/mderriey/verion-release-brown-bag/pulls/{AppVeyor.Environment.PullRequest.Number}",
+        prFile);
+
+    var prData = ParseJsonFromFile(prFile);
+    var sourceBranch = prData?["head"]?.Value<string>("ref");
+
+    Information("Found that the PR comes from branch {0}", sourceBranch ?? "(couldn't determine branch)");
+    if (string.IsNullOrEmpty(sourceBranch) || !sourceBranch.StartsWith("release", StringComparison.OrdinalIgnoreCase))
+    {
+        Information("Pull request is not from a release branch, skipping creation of the release");
+        return;
+    }
+
+    var githubUsername = getEnvironmentVariable("GITHUB_USERNAME");
+    var githubToken = getEnvironmentVariable("GITHUB_TOKEN");
+
+    GitReleaseManagerCreate(githubUsername, githubToken, "mderriey", "version-release-brown-bag", new GitReleaseManagerCreateSettings
+    {
+        Milestone = majorMinorPatch,
+        Name = majorMinorPatch,
+        Prerelease = true,
+        TargetCommitish = "master"
+    });
+});
+
 Task("Default")
-    .IsDependentOn("PublishPackages");
+    .IsDependentOn("PublishPackages")
+    .IsDependentOn("CreateRelease");
 
 RunTarget(target);
