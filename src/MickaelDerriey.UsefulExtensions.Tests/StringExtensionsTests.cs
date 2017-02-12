@@ -27,6 +27,16 @@ namespace MickaelDerriey.UsefulExtensions.Tests
 
                 Assert.Equal("Hey my name is Mickaël", result);
             }
+
+            [Fact]
+            public void FormatsTheSourceValueWithSpecifiedMultipleArguments()
+            {
+                var source = "Hey my name is {0}, I'm {1}";
+
+                var result = source.FormatWith("Mickaël", 19);
+
+                Assert.Equal("Hey my name is Mickaël, I'm 19", result);
+            }
         }
     }
 }
